@@ -36,6 +36,7 @@ app.use(session({
 
 app.use(cors());
 app.use("/api/auth",require("./routers/api/auth"));
+app.use("/api/user/projects",require("./routers/api/projects"));
 
 const db =require("./setup/connect").mongodbURL;
 const s =async()=>{ 
@@ -50,40 +51,14 @@ console.log(process.env.NODE_ENV)
 
 
 if(process.env.NODE_ENV !== 'production'){
-    var reqid = null;
+
+
 app.get("/",(req,res)=>{
     
     
     res.send("hello");
     
-      
-      
 });
-
-app.get("/check-code",(req,res)=>{
-
-  res.send(`<html><body><form method="post" action="/verify"><lable>code : </lable><input type="text" name="code"><input type="submit" value="submit"></form></body></html>`)
-
-})
-
-app.post("/verify",(req,res)=>{
-
-  let code = req.body.code;
-  console.log(`code : ${code}\nrequest_id : ${reqid}`)
-  nexmo.verify.check({
-    request_id: reqid,
-    code: code
-  }, (err, result) => {
-    if (err) {
-      console.error(err);
-    } else {
-
-      console.log(result);
-
-    }
-  });
-  
-})
 
 }
 

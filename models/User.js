@@ -1,11 +1,12 @@
 const mongoose =require("mongoose");
 const bcrypt = require('bcryptjs');
 var encrypt = require('mongoose-encryption');
+const { stringify } = require("uuid");
 // const secret  = require("../setup/connect").TOKEN_KEY;
 const  Schema = mongoose.Schema;
 const userSchema = new Schema({
 
-    googleId:{
+    githubId:{
         type:String,
         required:false
     },
@@ -13,73 +14,43 @@ const userSchema = new Schema({
         type: String,
         required:true
     },
-    email:{
-        type: String,
-        require:true
-    },
-    phone:{
-        type:Number,
-        require:true
-    },
-    password:{
-        type: String,
-        require:true
-    },
     date:{
         type:Date,
         default :Date.now
     },
-    emailVerification:{
-        status:{
-            type:Boolean,
-            default:false,
+    projects:[{
+        title:{
+            type:String,
             require:true
         },
-        secret_id:{
+        description:{
             type:String,
-            default:null,
-            require:true
-        }
-    },
-    mobileVerification:{
-        status:{
-            type:Boolean,
-            default:false,
             require:true
         },
-        secret_id:{
-            type:String,
-            default:null,
-            require:true
-        }
-    }
+        Date:{
+            type:Date,
+            default :Date.now
+        },
+
+        todos:[{
+            task:{
+                type:String,
+                require:true
+            },
+            status:{
+                type:Boolean,
+                require:true,
+                default:false
+            },
+            Date:{
+                type:Date,
+                default :Date.now
+            }
+        }]
+
+    }]
     
 })
-
-var encKey = process.env.SOME_32BYTE_BASE64_STRING;
-var sigKey = process.env.SOME_64BYTE_BASE64_STRING;
-var secret  = require("../setup/connect").TOKEN_KEY;
-// userSchema.plugin(encrypt, { encryptionKey: encKey, signingKey: sigKey });
-// userSchema.plugin(encrypt,{ secret: secret });
-
-
-userSchema.pre('save', function(next){
-    var user = this;
-    const saltRounds = 12;
-
-    if (!user.isModified('password')) {
-        console.log("password not modified")
-        return next();
-    }
-    bcrypt.hash(user.password, saltRounds, function(err, hash) {
-        console.log("password  modified")
-        if (err) {
-            return next(err);
-        }
-        user.password = hash;
-        next();
-    });
-});
 
 userSchema.statics.checkIfUserExists = async(email)=>{
 
@@ -93,6 +64,7 @@ userSchema.statics.checkIfUserExists = async(email)=>{
           throw err;
       })
   };
+  
   userSchema.statics.checkIfUserExistsWithId = async(userId)=>{
   
     return await User
@@ -105,6 +77,7 @@ userSchema.statics.checkIfUserExists = async(email)=>{
           throw err;
       })
   };
+
   userSchema.statics.getUserDateWithId = async(userId)=>{
   
     return await User
@@ -117,11 +90,7 @@ userSchema.statics.checkIfUserExists = async(email)=>{
           throw err;
       })
   };
-  
-userSchema.statics.comparePassword = (input_password,current_password)=>{
 
-    return bcrypt.compare(input_password,current_password)
- }
 
  userSchema.statics.updateStatus = async(id , data)=>{
 
@@ -135,4 +104,5 @@ userSchema.statics.comparePassword = (input_password,current_password)=>{
                        return  err;
                     })
  }
-const User = module.exports  = mongoose.model("users",userSchema);
+ 
+const User = module.exports  = mongoose.model("GithubUsers",userSchema);

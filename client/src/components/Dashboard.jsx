@@ -1,126 +1,137 @@
 import React, { useEffect ,useState} from 'react'
 import AdminNavbar from './AdminNavbar'
 import "./../App.css"
+import Projectdetails from './Projectdetails';
+
 
 
 export default  function Dashboard(props) {
 
     const [isSpinner1,setSpinner1] =useState(false);
     const [isSpinner,setSpinner]=useState(true);
+    const [projects,setProjects]=useState([]);
     const [userId , setUserId] = useState([])
     const [userData , setUserData] = useState([])
     const [errMessage , setErrMessage] = useState()
 
 
-    const googlelog = async() =>{
+    const githublog = async() =>{
 
         try{
-        const resp = await fetch("/api/auth/verify/google");
+        const resp = await fetch("/api/auth/verify/github");
         const data = await resp.json();
+        // console.log(data)
         if(data.success === false){
-            props.history.push("/login");
+            props.history.push("/admin");
             }
-            getUserData(data.msg)
+            getAllProjects()
             
         }catch(e){
-            console.log(e);
-            props.history.push("/login");
+            console.log("err", e);
+            props.history.push("/admin");
 
         }
     }
-
-    const userlog= async ()=>{
-
-    try{
-    const resp = await fetch("/api/auth/verify");
-    const data = await resp.json();
-    if(data.success === false){
-        googlelog()
-     }else if (data.success === true) {
-         getUserData(data.msg)
-         
-     }
-
-    }catch(e){
-        console.log(e);
-        props.history.push("/login");
-    }
-    }
     
+    const getAllProjects = async()=>{
+
+        try {
+          const resp = await fetch("api/user/projects/all-projects");
+          const ProjectsData = await resp.json();
+          console.log(ProjectsData.data.projects)
+          if(ProjectsData.data.projects){
+            await setProjects(ProjectsData.data.projects)
+          }
+        } catch (error) {
+            console.log(error)
+          return props.history.push("/login");
+        }         
+        // console.log(postsData)     
+    }
+
+    const updateProject = async(id,title)=>{
+        setSpinner1(true)
+        props.history.push(`/project/update/${id}/${title}`)
+        setSpinner1(false)
+    }
+
+    const delProject = async(id)=>{
+        try {
+            if (!id) {
+                alert("Internal ERROR...!")
+            } else {
+                setSpinner1(true)
+                const response = await fetch('api/user/projects/delete',{
+                    method: "DELETE",
+                    headers: {
+                        Accept: "application/json",
+                        "Content-Type": "application/json"
+
+                    },
+                    mode:"cors",
+                    body:JSON.stringify({projectId:id})
+                })
+                const data = await response.json();
+
+                if (data.error === false) {
+                    await getAllProjects()
+                    setSpinner1(false)
+                } else {
+                    setSpinner1(false);
+                    alert("error"+data.msg)        
+                }
+            }
+        } catch (error) {
+            setSpinner1(false) ;
+            alert("Internal Error...")
+        }
+    }
+
+    
+    const showProjects = projects.map((project)=>{
+        return <Projectdetails key={project._id} project={project} updateProject = {updateProject} delProject={delProject} />
+    })
 
    const sp = <div className="spinner-border " role="status" id="spinner" style={{backgroundColor:"transparent"}}>
    <span className="sr-only">Loading...</span>
    </div> 
+
     useEffect(()=>{
-        userlog();
-        // setSpinner(false)
+        githublog();
+        setSpinner(false)
+        
     },[])
-
-    
-    const getUserData = async (id)=>{
-
-        try{
-            
-            const response = await fetch('/api/auth/getuser' , {
-                method: "POST",
-                headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json"
-            
-                },
-                mode:"cors",
-                body :JSON.stringify({id:id})
-            })
-             const data = await response.json();
-
-                if (data.error === false) {
-                    console.log(data.user)
-                    // var user = data.user.map((k)=>{
-                    //     return k
-                    // })
-                    // console.log(user)
-                    setUserData(data.user) 
-                }
-
-                if (data.error === true) {
-                    setErrMessage(data.msg)
-                }
-                setSpinner(false)
-             
-        }catch(e){
-            console.log(e);
-            setSpinner(false)
-            setErrMessage("internal Error...!!!")
-            
-        }
-    }
 
 
     if (isSpinner) {
         return (
-          <div className="d-flex justify-content-center " >
-            <div className="spinner-border" role="status" id="spinner">
-                <span className="sr-only">Loading...</span>
+            <div className="d-flex justify-content-center " >
+                <div className="spinner-border" role="status" id="spinner">
+                    <span className="sr-only">Loading...</span>
+                </div>
             </div>
-        </div>
-        )
+            )
     }else{
-    return (
-        <div>
-        <AdminNavbar />
+        return (
+            <div>
+                <AdminNavbar />
+            
+                {isSpinner1 ? sp : ''}
+                <div className="AdminApp">
+                    <h1>Welcome</h1>
+                    <div className="d-flex justify-content-end mr-3" >
+                    <a href="/projects/create"><button className="btn btn-primary"><h5>Add</h5></button></a>
+                  </div>
+                  <br />
+
+                    {showProjects}
+                    <br />
         
-        {isSpinner1? sp : ''}
-        <div className="AdminApp">
-        <h1>Welcome</h1>
-                {userData.username}<br/>
-                {userData.email}<br />
-                {userData.phone ? userData.phone : ""}<br />
-            <br />
-    
-        </div>
-            {errMessage}
-        </div>
-        
-    )
+                </div>
+
+                {errMessage}
+            </div>
+            
+        )
     }
 }

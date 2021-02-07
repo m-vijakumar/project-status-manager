@@ -24,7 +24,7 @@ export default function Home() {
                 <br /> <br />
                     <h1>Welcome </h1>
         
-                    <p ><a href="/register">Register</a>  /  <a href="/login">  Login</a></p> 
+                    <h4 style={{display:"flex",justifyContent:"center"}}><a href="http://localhost:5000/api/auth/github">Signup With Github</a></h4>
 
                     <br />
                     <br />

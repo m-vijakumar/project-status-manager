@@ -1,0 +1,123 @@
+.AdminApp {
+
+  padding: 4% 2%;
+  /* background-color: rgb(215, 255, 189); */
+  background-color: transparent;
+
+}
+
+.App-logo {
+  height: 40vmin;
+}
+td{
+  text-align: center;
+}
+
+
+
+.App-link {
+  color: #09d3ac;
+}
+
+.login{
+
+  text-align: center;
+ display: inline;
+ 
+  left: 50%;
+  top:50%
+}
+.postStyle{
+  background-color: rgba(217, 232, 236, 0.163);
+  /* background-image: linear-gradient(to right, rgba(96, 199, 194, 0.226), rgba(120, 213, 214, 0.599)); */
+  padding : 10px;
+  height: 100%;
+  margin-bottom: 1%;
+  border-radius: 2%;
+  border: 1px solid rgb(151, 222, 241);
+}
+.updateButton{
+  background-color : transparent ;
+  color: rgb(8, 25, 61);
+  border:none;
+  font-size: small;
+  /* padding : 1px 5px 5px 5px;
+  border-radius : 8%; */
+  cursor :pointer;
+  float:right
+}
+.tooltip {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+  top: 100%;
+  left: 50%;
+  margin-left: -60px;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+.updateButton:hover{
+  
+  color: darkturquoise;
+  font-size: medium;
+}
+.delButton{
+  background-color : transparent ;
+  /* color: rgb(255, 223, 223); */
+  font-size: small;
+  border:none;
+  padding : 1px 5px 5px 5px;
+  /* border-radius : 8%; */
+  cursor :pointer;
+  float:right
+  
+}
+.delButton:hover{
+  
+  color: red;
+  font-size: medium;
+}
+.exportButton{
+  background-color : transparent ;
+  /* color: rgb(255, 223, 223); */
+  font-size: small;
+  border:none;
+  padding : 1px 5px 5px 5px;
+  /* border-radius : 8%; */
+  cursor :pointer;
+  float:right
+  
+}
+.exportButton:hover{
+  
+  color: blue;
+  font-size: medium;
+}
+
+#spinner {
+  top: 30%;
+  left: 50%;
+  position: absolute;
+  background: white;
+}
+#spinner1 {
+
+  position: absolute;
+  background: transparent;
+}

@@ -3,9 +3,9 @@ const router =express.Router();
 const bodyparser=require("body-parser");
 const key =require("../../setup/connect").TOKEN_KEY;
 const userController = require("../../controllers/user")
-const tokenHelper = require("../../helpers/sessionVerfiy")
+const sessionHelper = require("../../helpers/sessionHelper")
 const passport = require("passport")
-require('../../helpers/googleAuth')
+require('../../helpers/githubAuth')
 const User = require("../../models/User")
 
 router.get("/users",async(req,res)=>{
@@ -17,12 +17,8 @@ router.get("/users",async(req,res)=>{
             console.log(err)
         })
 })
-// @type    GET
-//@route    /api/auth/register
-// @desc    starting router
-// @access  PRAVITE
 
-router.get("/verify",tokenHelper.sessionVerfiy,(req,res)=>{
+router.get("/verify/github",sessionHelper.githubSessionVerification,(req,res)=>{
 
     res.json({
         error:false,
@@ -30,37 +26,7 @@ router.get("/verify",tokenHelper.sessionVerfiy,(req,res)=>{
         msg:req.session.user.id
     })
 });
-router.get("/verify/status",tokenHelper.sessionVerification,(req,res)=>{
 
-    res.json({
-        error:false,
-        success:true,
-        msg:req.session.verification.id
-    })
-});
-
-router.get("/verify/google",tokenHelper.googleSessionVerification,(req,res)=>{
-
-    res.json({
-        error:false,
-        success:true,
-        msg:req.session.googleAuth.id
-    })
-});
-
-// @type    POST
-//@route    /api/auth/register
-// @desc    starting router
-// @access  PUBLIC
-
-router.post("/register",userController.registervalidCredentials,userController.register);
-
-
-// @type    POST
-//@route    /api/auth/login
-// @desc    starting router
-// @access  PUBLIC
-router.post("/login",userController.loginValidCredentials,userController.login);
 
 // @type    POST
 //@route    /api/auth/login
@@ -69,55 +35,17 @@ router.post("/login",userController.loginValidCredentials,userController.login);
 router.post("/getstatus",userController.getStatus);
 
 // @type    GET
-//@route    /api/auth/login
+//@route    /api/auth/github
 // @desc    starting router
 // @access  PUBLIC
-router.get("/verify/email",userController.emailAuth);
-
-// @type    GET
-//@route    /api/auth/login
-// @desc    starting router
-// @access  PUBLIC
-router.get("/verify/email/resend",userController.emailAuthResend ,userController.emailAuth);
-
-// @type    GET
-//@route    /api/auth/login
-// @desc    starting router
-// @access  PUBLIC
-router.get("/emailverification",userController.emailAuthVerification);
-
-// @type    GET
-//@route    /api/auth/login
-// @desc    starting router
-// @access  PUBLIC
-
-router.get("/verify/phone",userController.phoneAuth);
-
-// @type    GET
-//@route    /api/auth/login
-// @desc    starting router
-// @access  PUBLIC
-
-router.get("/verify/phone/resend",userController.phoneAuth);
-
-// @type    GET
-//@route    /api/auth/login
-// @desc    starting router
-// @access  PUBLIC
-router.post("/phoneverification",userController.phoneAuthVerification);
-
-
-// @type    GET
-//@route    /api/auth/google
-// @desc    starting router
-// @access  PUBLIC
-router.get("/google",passport.authenticate('google', {scope : ['profile','email']}));
+router.get("/github",passport.authenticate('github', {scope : ['gist']}));
 
 // @type    POST
-//@route    /api/auth/google/verify
+//@route    /api/auth/github/verify
 // @desc    starting router
 // @access  PUBLIC
-router.get("/google/callback",passport.authenticate('google',{failureRedirect : '/'}),userController.googleAuthverify);
+router.get("/github/callback",passport.authenticate('github',{failureRedirect : '/'}),userController.githubAuthverify);
+
 
 // @type    GET
 //@route    /api/auth/logout
