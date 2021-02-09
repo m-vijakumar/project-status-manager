@@ -71,7 +71,8 @@ exports.githubAuthverify = (req,res)=>{
         const userData = {
             id : req.user.id,
             githubId : req.user.githubId,
-            username :req.user.username
+            username :req.user.username,
+            accessToken : req.user.accessToken
         }
 
         console.log("githubAuthverify")

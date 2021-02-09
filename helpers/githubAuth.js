@@ -16,6 +16,8 @@ passport.deserializeUser(function(id, done) {
 });
 
 
+var githubAccessToken;
+
 passport.use(new GitHubStrategy({
     clientID: "a66ec4d0e2639b9b6cd0",
     clientSecret: "7fa7b48763568aac9044135cc0550f64c8a5beae",
@@ -28,8 +30,10 @@ passport.use(new GitHubStrategy({
     console.log(profile.displayName)
 
     console.log(accessToken)
+    module.exports={
+      githubAccessToken : accessToken
 
-
+    }
     let userData ={
       githubId: profile.id,
       username : profile.username
@@ -44,3 +48,9 @@ passport.use(new GitHubStrategy({
      
   }
 ));
+
+console.log("githubAccessToken", githubAccessToken)
+
+module.exports={
+  githubAccessToken : githubAccessToken
+}

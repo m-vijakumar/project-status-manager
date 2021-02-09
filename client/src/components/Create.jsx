@@ -82,12 +82,12 @@ export default function Create(props) {
     }
   }
 
-      const sp1 =  <button className="btn btn-primary float-right" type="button" disabled>
-      <span className="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
-      Adding...
-    </button>
+    const sp1 =  <button className="btn btn-primary float-right" type="button" disabled>
+        <span className="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+        Adding...
+      </button>
     
-    const sp =  <input type="button" name="register"  value={isSpinner1 ? sp1 :"Add Contact"} className="btn btn-primary float-right" onClick={handleSubmit} />
+    const sp =  <input type="button" name="register"  value={isSpinner1 ? sp1 :"Add Project"} className="btn btn-primary float-right" onClick={handleSubmit} />
         if (isSpinner) {
           return (
             <div className="d-flex justify-content-center " >

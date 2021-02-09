@@ -3,7 +3,8 @@ const router =express.Router();
 const bodyparser=require("body-parser");
 const key =require("../../setup/connect").TOKEN_KEY;
 const projectsController = require("../../controllers/projects")
-const sessionHelper = require("../../helpers/sessionHelper")
+const sessionHelper = require("../../helpers/sessionHelper");
+
 
 
 
@@ -35,7 +36,7 @@ router.post("/get/project",projectsController.getProject)
 // @desc    starting router
 // @access  PRAVITE 
 
-router.post("/update",sessionHelper.githubSessionVerification,projectsController.validCreateCredentials , projectsController.updateProject)
+router.post("/update",sessionHelper.githubSessionVerification, projectsController.updateProject)
 
 
 // @type    DELETE
@@ -51,6 +52,22 @@ router.delete("/delete",sessionHelper.githubSessionVerification,projectsControll
 // @access  PRAVITE 
 
 router.post("/add-todo",sessionHelper.githubSessionVerification,projectsController.addTask)
+
+// @type    POST
+//@route    /api/admin/product/update
+// @desc    starting router
+// @access  PRAVITE 
+
+router.post("/todo/update",sessionHelper.githubSessionVerification, projectsController.updateProjectTodos)
+
+
+// @type    POST
+//@route    /api/admin/product/DELETE
+// @desc    starting router to delete post
+// @access  PRAVITE 
+
+router.post("/todos/exportgist",projectsController.exportGist)
+
 
 // @type    DELETE
 //@route    /api/admin/product/DELETE

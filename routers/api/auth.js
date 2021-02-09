@@ -38,14 +38,13 @@ router.post("/getstatus",userController.getStatus);
 //@route    /api/auth/github
 // @desc    starting router
 // @access  PUBLIC
-router.get("/github",passport.authenticate('github', {scope : ['gist']}));
+router.get("/github",passport.authenticate('github', {scope : ['user','gist']}));
 
 // @type    POST
 //@route    /api/auth/github/verify
 // @desc    starting router
 // @access  PUBLIC
 router.get("/github/callback",passport.authenticate('github',{failureRedirect : '/'}),userController.githubAuthverify);
-
 
 // @type    GET
 //@route    /api/auth/logout

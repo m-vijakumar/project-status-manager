@@ -44,14 +44,14 @@ export default  function Dashboard(props) {
           }
         } catch (error) {
             console.log(error)
-          return props.history.push("/login");
+          return props.history.push("/");
         }         
         // console.log(postsData)     
     }
 
     const updateProject = async(id,title)=>{
         setSpinner1(true)
-        props.history.push(`/project/update/${id}/${title}`)
+        props.history.push(`/projects/update/${id}/${title}`)
         setSpinner1(false)
     }
 
@@ -87,9 +87,16 @@ export default  function Dashboard(props) {
         }
     }
 
+    // const setdivStatus = async(status)=>{
+    //     set
+    // }
+
+    const setprojects = async()=>{
+        await getAllProjects()
+    }
     
     const showProjects = projects.map((project)=>{
-        return <Projectdetails key={project._id} project={project} updateProject = {updateProject} delProject={delProject} />
+        return <Projectdetails key={project._id} project={project} updateProject = {updateProject} delProject={delProject} setprojects={setprojects}/>
     })
 
    const sp = <div className="spinner-border " role="status" id="spinner" style={{backgroundColor:"transparent"}}>

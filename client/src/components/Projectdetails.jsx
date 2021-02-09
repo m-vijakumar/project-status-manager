@@ -13,10 +13,62 @@ export default function Projectdetails(props) {
     const history = useHistory();
 
     const updateProject = () =>{
-        props.updateProject(props.project._id,props.project.name)
+        props.updateProject(props.project._id,props.project.title)
     }
     const delProject = async()=>{
         props.delProject(props.project._id)
+    }
+
+    const exportgist = async()=>{
+
+        let mdFileData = `### ${props.project.title} \n\n`
+        var mddata = props.project.todos.map(todo=>{
+                        var status = todo.status ? "[x]" : "[ ]"
+                        mdFileData +=`- ${status} ${todo.task} \n`
+                    })
+                console.log(mdFileData)
+        try{
+            if( !mdFileData ){
+            
+                alert("in valid data")
+            }else{               
+        
+                const filedata = {
+                    projectId : props.project._id, 
+                    projectName : props.project.title, 
+                    mdData : mdFileData
+                }
+                setSpinner1(true)
+                // e.persist();
+                const response = await fetch('/api/user/projects/todos/exportgist' ,{
+
+                    method: "POST",
+                    headers: {
+                        Accept: "application/json",
+                        "Content-Type": "application/json"
+                    },
+                    mode:"cors",
+                    body :JSON.stringify(filedata)
+                })
+
+                const data = await response.json();
+
+                if (data.error === false) {
+                    alert("todo Added");
+                    props.setprojects()
+                    setSpinner1(false)       
+                }else{
+                    setSpinner1(false);
+                    alert(data.msg)
+                }
+        
+            }
+        }catch(e){
+            setSpinner1(false) ;
+            alert("Internal Error...")
+            console.log(e)
+        }            
+
     }
 
     const onSubmit = async(e)=>{
@@ -52,18 +104,21 @@ export default function Projectdetails(props) {
             if (data.error === false) {
                 
               alert("Task Added");
-            //   <Redirect to="/dashboard"/>
-                history.push("/dashboard")
+               setShow(true)
               setSpinner1(false)       
-            }else{
+            }
               setSpinner1(false);
               alert(data.msg)
-            }
+              props.setprojects()
+          setShow(true)
         
           }
         }catch(error){
+            console.log(error)
+            alert("Internal Error in ProjectDetails...")
           setSpinner1(false) ;
-          alert("Internal Error in ProjectDetails...")
+          props.setprojects()
+          setShow(true)
           console.log(e)
         }
       }    
@@ -93,7 +148,53 @@ export default function Projectdetails(props) {
                 if (data.error === false) {
 
                     alert("todo deleted")
-                    return <Redirect to="/" />
+                    props.setprojects()
+                    setShow(true)
+                    
+                    setSpinner1(false)
+                } else {
+                    setSpinner1(false);
+                    alert("error"+data.msg)        
+                }
+            }
+        } catch (error) {
+            setSpinner1(false) ;
+            alert("Internal Error... in delproject")
+        }
+    }
+
+    const updateTodo = async(todo)=>{
+        try {
+            
+            if (!todo._id || !props.project._id) {
+                alert("Internal ERROR...!")
+            } else {
+                setSpinner1(true)
+                const todoData = {
+                    projectId:props.project._id,
+                    todoId:todo._id,
+                    status: !todo.status,
+                    task: todo.task
+                }
+                const response = await fetch('api/user/projects/todo/update',{
+                    method: "POST",
+                    headers: {
+                        Accept: "application/json",
+                        "Content-Type": "application/json"
+                    },
+                    mode:"cors",
+                    body:JSON.stringify(todoData)
+                })
+                const data = await response.json();
+                console.log(data)
+                if (data.error === false) {
+
+                    alert("todo updated")
+
+                    props.setprojects()
+                    
+                    setShow(true)
+                    
                     setSpinner1(false)
                 } else {
                     setSpinner1(false);
@@ -105,13 +206,11 @@ export default function Projectdetails(props) {
             alert("Internal Error...")
         }
     }
-    
-    // const getModelStatus = ()=>{
-    //     props.getModelStatus(true);
-    // }
+
+
 
     const showTodos =props.project.todos.map((todo)=>{
-        return <Tododetails todo={todo} deltodo={deltodo}></Tododetails>
+        return <Tododetails todo={todo} deltodo={deltodo} updateTodo={updateTodo} ></Tododetails>
     })
 
     return (
@@ -120,7 +219,7 @@ export default function Projectdetails(props) {
             
             <div className="postStyle">
             
-                    <button  className="exportButton" value={props.project._id}><i class="fas fa-file-export"></i></button>
+                    <button  onClick={exportgist} className="exportButton" value={props.project._id}><i class="fas fa-file-export"></i></button>
                     <button onClick={delProject} className="delButton mr-3" value={props.project._id}><i class='fas fa-trash'></i></button>
                     <button onClick={updateProject} className="updateButton mr-3"><i class='fas fa-marker'></i></button>
                     
@@ -132,7 +231,7 @@ export default function Projectdetails(props) {
                     <div style={{visibility:show ? "visible":"hidden"}}>
                         <form onSubmit={onSubmit} style={{display :'flex'}}>
                             <input type="text" name="task"
-                            style={{flex :10 ,padding: '15px',fontSize : '15px'}}
+                            style={{flex :10 ,padding: '10px',fontSize : '10px'}}
                             value={task}
                             onChange={onchange}
                             placeholder="Add Todo......"
@@ -140,15 +239,13 @@ export default function Projectdetails(props) {
                             <input type="submit"
                             value="Add Todo"
                             className="btn"
-                            style={{flex :1,backgroundColor:"black",color:"white"}}
+                            style={{flex :1,backgroundColor:"black",color:"white",padding:"0px",borderRadius:"0px"}}
                             />
                         </form>
                         {showTodos}
                     </div> : ""
                 }
-                
-             
-                
+   
             </div>
         </>
     )

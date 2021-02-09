@@ -6,26 +6,12 @@ export default function Update(props) {
 
     const [content, setContent] = useState({});
     const [editButton ,setEditButton] = useState({title:true,imgsrc:true,description:true})
-    const [postId , setPostId] = useState("");
+    const [projectId , setProjectId] = useState("");
     const [message, setMessage] = useState("");
     const [isSpinner,setSpinner] =useState(true);
     const [isSpinner1,setSpinner1] =useState(false);
     const location = useLocation();
     const history = useHistory();
-
-    // const userlog= async ()=>{
-
-    //   try{
-    //   const resp = await fetch("/api/auth/verfiy");
-    //   const data = await resp.json();
-    //   if(data.success === false){
-    //     return props.history.push("/login");
-    //    }
-    //   }catch(e){
-    //       // console.log(e);
-    //      return props.history.push("/login");
-    //   }
-    // }
 
     const githublog = async() =>{
 
@@ -34,13 +20,12 @@ export default function Update(props) {
       const data = await resp.json();
       // console.log(data)
       if(data.success === false){
-          props.history.push("/admin");
+          props.history.push("/");
           }
-          getAllProjects()
           
       }catch(e){
           console.log("err", e);
-          props.history.push("/admin");
+          props.history.push("/");
 
       }
     }    
@@ -52,7 +37,7 @@ export default function Update(props) {
 
     const getProjectContent = async(e)=>{
         // e.persist();
-        // console.log(postId)
+        // console.log(projectId)
         try{
         const response = await fetch('/api/user/projects/get/project' , {
             method: "POST",
@@ -63,22 +48,23 @@ export default function Update(props) {
             },
             mode:"cors",
             
-            body :JSON.stringify({postId:location.pathname.split("/")[3]})
+            body :JSON.stringify({projectId:location.pathname.split("/")[3]})
         })
     
         const data = await response.json();
         if (data.error === false) {
           setContent(data.data)
           setSpinner(false)
+          console.log("adwedwedW",data)
         } else {
           alert("error..!!!");
-          props.history.push("/dashboard");
+          props.history.push("/404");
           setSpinner(false)
         }
         // console.log(data.data)
       }catch(err){
         alert("error..!");
-         props.history.push("/dashboard");
+        //  props.history.push("/404");
         setSpinner(false)
       }
 
@@ -86,10 +72,11 @@ export default function Update(props) {
     useEffect(()=>{
         try {           
           githublog();
-          setPostId(location.pathname.split("/")[3]);
-          getAddressContent();                
+          setProjectId(location.pathname.split("/")[3]);
+          getProjectContent();                
         } catch (error) {
-            history.push("/")
+            // history.push("/")
+            alert(error)
         }
 
     },[])      
@@ -100,21 +87,22 @@ export default function Update(props) {
     const handleSubmit = async (e) => {
          
         try{
-        if( !postId ||!content.name ||!content.phoneno ||!content.address){
+          e.preventDefault()
+        if( !projectId ||!content.title ){
     
           setMessage("fill the details")
         }else{
             
           const contactdata = {
-            postId:postId,        
-            name : content.name,
-            phoneno:content.phoneno,
-            address:content.address,
+            projectId:projectId,        
+            title : content.title,
+            description:content.description,
+            todos:content.todos
           };
        console.log(contactdata)
           setSpinner1(true)
           e.persist();
-          const response = await fetch('/api/address/edit' , {
+          const response = await fetch('/api/user/projects/update' , {
             method: "POST",
             headers: {
               Accept: "application/json",
@@ -135,7 +123,7 @@ export default function Update(props) {
           }else{
               setSpinner1(false) ;
               alert(data.msg);
-              props.history.push("/dashboard");
+              props.history.push("/404");
               setSpinner(false)
             }
         }
@@ -151,7 +139,7 @@ export default function Update(props) {
       Updating...
     </button>
     
-    const sp =  <input type="button" name="register"  value={isSpinner1 ? sp1 :"Update Contact"} className="btn btn-primary float-right" onClick={handleSubmit} />
+    const sp =  <input type="button" name="register"  value={isSpinner1 ? sp1 :"Update Project"} className="btn btn-primary float-right" onClick={handleSubmit} />
         if (isSpinner) {
           return (
             <div className="d-flex justify-content-center " >
@@ -171,17 +159,14 @@ export default function Update(props) {
           <div onChange={handleChange} className="container">
           
           <div class="form-group ">
-          <label >Name</label>                
-              <input type="text" class="form-control md-2" name="name"  placeholder="Name" defaultValue={content.name}/>
+          <label >Title</label>                
+              <input type="text" class="form-control md-2" name="title"  placeholder="Title" defaultValue={content.title}/>
           </div>
           
+          
           <div class="form-group ">
-          <label >Phone No</label>                
-          <input type="number" class="form-control md-2" name="phoneno" placeholder="phoneno" onInput={(e) => e.target.value = e.target.value.slice(0, 12)} defaultValue={content.phoneno}/>
-          </div>
-          <div class="form-group ">
-          <label >Address</label>                
-          <textarea rows="3" cols="15" className="form-control" name="address" placeholder="Address" defaultValue={content.address}></textarea>
+          <label >Description</label>                
+          <textarea rows="3" cols="15" className="form-control" name="description" placeholder="description" defaultValue={content.description}></textarea>
           </div>
           </div>
           

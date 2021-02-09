@@ -1,4 +1,7 @@
 const User = require("../models/User");
+var fs = require('fs');
+const { Octokit } = require("@octokit/core");
+
 
 exports.validCredentials = (req,res,next) =>{
 
@@ -120,7 +123,7 @@ exports.getProject = async(req,res)=>{
                 .then((result)=>{
                     // console.log(result.projects[0])
                     if (result) {
-                        
+                        console.log(result)
                         return res.json({
                             error:false,
                             data:result.projects[0]
@@ -143,12 +146,13 @@ exports.getProject = async(req,res)=>{
 
 exports.updateProject = async(req,res)=>{
 
-    const {title, description, projectId} = req.body;
+    const {title, description, projectId,todos} = req.body;
 
     const projectData = {
         _id: projectId, 
         title: title,
         description:description,
+        todos  : todos
     }
 
 
@@ -249,13 +253,13 @@ exports.addTask =async(req,res)=>{
                 }},{ new:true,  __v:0 }).collation({'locale':'en'})
         .then((result)=>{
             if (result) {
-                console.log(result)
+                console.log("Task Added")
                 res.json({
                     error:false,
                     msg:"Task Added",
                 })
             } else {
-                console.log(r)
+                console.log("user Doesn't exits")
                 res.json({
                     error:true,
                     msg:"user Doesn't exits"
@@ -273,9 +277,56 @@ exports.addTask =async(req,res)=>{
 
 }
 
-exports.updateTask =()=>{
+exports.updateProjectTodos = async(req,res)=>{
 
-}
+    const {projectId, todoId,task, status} = req.body;
+
+    const todoData = {
+        _id: todoId, 
+        task: task,
+        status:status
+    }
+
+
+    await User.findOneAndUpdate({ $and:[{_id:req.session.user.id},
+                                {"projects._id" :{"$eq":req.body.projectId}},
+                                {"projects.todos._id" :{"$eq":req.body.todoId}}]
+                            },
+                            {$set : { "projects.$[outer].todos.$[inner]" :todoData }},
+                            { arrayFilters: [
+                                { "outer._id": req.body.projectId },
+                                { "inner._id": req.body.todoId }
+                            ]})      
+                            
+                .then((result)=>{
+
+                    if (result == null) {
+                        console.log(result)
+                        return res.json({
+                            error:true,
+                            msg:"Project Id error"
+                        })
+                        
+                    }else{
+                        console.log(result)
+                        return res.json({
+                            error:false,
+                            data:result
+                        })
+                        
+                    }
+                    
+                })
+                .catch((err)=>{
+                    console.log(err)
+                    res.json({
+                        error:true,
+                        msg:"err  :"+err
+                    })
+                })
+
+
+};
 
 exports.getTask =()=>{
 
@@ -313,4 +364,48 @@ exports.deleteTask =async(req,res)=>{
             })       
     })
     
+}
+
+exports.exportGist = async(req,res)=>{
+
+    console.log(require("../helpers/githubAuth").githubAccessToken)
+    const octokit = new Octokit({ auth:require("../helpers/githubAuth").githubAccessToken });
+    var mdfile = await fs.writeFile('mynewfile3.md', req.body.mdData, function (err) {
+        if (err) throw err;
+        console.log('Saved!');
+        res.json({
+            sucess:true,
+            error:false
+        })
+    });
+    
+    // var kprojectFile = `${projectname}.md`
+    await octokit.request('POST /gists', {
+        files: {
+            [`${req.body.projectName}.md`]: {
+              "content": req.body.mdData
+            }}
+      })
+      .then((r)=>{
+        console.log(r)
+      })
+      .catch(err=>{
+          console.log(err)
+      })
+
+    //   const response = await fetch('https://api.github.com/gists' ,{
+
+    //     method: "POST",
+    //     headers: {
+    //       Accept: "application/vnd.github.v3+json",
+    //       "Content-Type": "application/json"
+    //     },
+        
+    //     body :{
+    //         files:mdfile
+    //     },
+    //     files:{projectName : req.body.mdData }
+    //   })
+
+    //   console.log(response)
 }

@@ -1,13 +1,29 @@
 import React, {useEffect, useState }  from 'react'
 
-export default function Home() {
+export default function Home(props) {
 
     const [isSpinner,setSpinner] =useState(true);
     const [message , setMessage] =useState("");
    
+    const githublog = async() =>{
 
+        try{
+        const resp = await fetch("/api/auth/verify/github");
+        const data = await resp.json();
+        // console.log(data)
+        if(data.success === true){
+            props.history.push("/dashboard");
+            }
+            
+        }catch(e){
+            console.log("err", e);
+            props.history.push("/admin");
+
+        }
+    }
     useEffect( () => {
         
+        githublog();
         setSpinner(false)
     }, []);
 
