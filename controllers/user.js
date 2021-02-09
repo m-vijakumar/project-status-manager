@@ -80,7 +80,7 @@ exports.githubAuthverify = (req,res)=>{
         req.session.user = userData
 
         console.log(  req.session.githubAuth)
-        res.redirect("http://localhost:3000/dashboard")
+        res.redirect("https://project-status-manager.herokuapp.com/dashboard")
           
     }
 
