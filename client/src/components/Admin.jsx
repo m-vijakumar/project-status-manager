@@ -40,7 +40,7 @@ export default function Home(props) {
                 <br /> <br />
                     <h1>Welcome </h1>
         
-                    <h4 style={{display:"flex",justifyContent:"center"}}><a href="http://localhost:5000/api/auth/github">Signup With Github</a></h4>
+                    <h4 style={{display:"flex",justifyContent:"center"}}><a href="https://project-status-manager.herokuapp.com/api/auth/github">Signup With Github</a></h4>
 
                     <br />
                     <br />
