@@ -21,7 +21,7 @@ var githubAccessToken;
 passport.use(new GitHubStrategy({
     clientID: "a66ec4d0e2639b9b6cd0",
     clientSecret: "7fa7b48763568aac9044135cc0550f64c8a5beae",
-    callbackURL: "https://project-status-manager.herokuapp.com:5000/api/auth/github/callback"
+    callbackURL: "https://project-status-manager.herokuapp.com/api/auth/github/callback"
   },
  async function (accessToken, refreshToken, profile, done) {
     console.log(profile)
