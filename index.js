@@ -50,17 +50,17 @@ s().catch(err => console.log(err))
 console.log(process.env.NODE_ENV)
 
 
-if(process.env.NODE_ENV !== 'production'){
+// if(process.env.NODE_ENV !== 'production'){
 
 
-app.get("/",(req,res)=>{
+// app.get("/",(req,res)=>{
     
     
-    res.send("hello");
+//     res.send("hello");
     
-});
+// });
 
-}
+// }
 
 app.use(express.static(path.join(__dirname, "client/build")));
 
