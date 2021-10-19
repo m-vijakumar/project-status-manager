@@ -1,8 +1,8 @@
-
-
-if ((!(true) && !(true))) {
-    console.log("true")
-} else {
-
-    console.log("false")
+var x ={
+    vijay : "kumar",
+    fff: "dfgd",
+    sfds: "Sdfsdf"
 }
+
+
+console.log(Object.keys(x))
